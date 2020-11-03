@@ -1,24 +1,24 @@
-#include "common.h"
+#include "code_ebd0_len_6a0.h"
 
-void func_800337D0(s16 new_alpha) {
-    GameStatus* gameStatus = *gGameStatusPtr;
+void intro_logos_set_fade_alpha(s16 alpha) {
+    GameStatus* gameStatus = GAME_STATUS;
 
-    gameStatus->bootAlpha = new_alpha;
+    gameStatus->bootAlpha = alpha;
 }
 
-void func_800337E0(s16 arg0) {
-    GameStatus* gameStatus = *gGameStatusPtr;
+void intro_logos_set_fade_color(s16 color) {
+    GameStatus* gameStatus = GAME_STATUS;
 
-    gameStatus->bootRed = arg0;
-    gameStatus->bootGreen = arg0;
-    gameStatus->bootBlue = arg0;
+    gameStatus->bootRed = color;
+    gameStatus->bootGreen = color;
+    gameStatus->bootBlue = color;
 }
 
-s16 func_800337F8(subtract_val) {
-    GameStatus* gameStatus = *gGameStatusPtr;
+s16 intro_logos_fade_in(s16 subtractAlpha) {
+    GameStatus* gameStatus = GAME_STATUS;
 
     if (gameStatus->bootAlpha != 0) {
-        gameStatus->bootAlpha -= subtract_val;
+        gameStatus->bootAlpha -= subtractAlpha;
         if (gameStatus->bootAlpha << 16 < 0) {
             gameStatus->bootAlpha = 0;
         }
@@ -28,11 +28,11 @@ s16 func_800337F8(subtract_val) {
     return 0;
 }
 
-s16 func_80033830(add_val) {
-    GameStatus* gameStatus = *gGameStatusPtr;
+s16 intro_logos_fade_out(s16 addAlpha) {
+    GameStatus* gameStatus = GAME_STATUS;
 
     if (gameStatus->bootAlpha != 0xFF) {
-        gameStatus->bootAlpha += add_val;
+        gameStatus->bootAlpha += addAlpha;
         if ((gameStatus->bootAlpha > 0xFF)) {
             gameStatus->bootAlpha = 0xFF;
         }
@@ -42,17 +42,16 @@ s16 func_80033830(add_val) {
     return 0;
 }
 
-
-void func_80033874(void) {
-    func_80137D88(0, (*gGameStatusPtr)->bootAlpha);
-    func_80137E10(0, (*gGameStatusPtr)->bootBlue, (*gGameStatusPtr)->bootGreen, (*gGameStatusPtr)->bootRed);
+void intro_logos_update_fade(void) {
+    func_80137D88(0, GAME_STATUS->bootAlpha);
+    func_80137E10(0, GAME_STATUS->bootBlue, GAME_STATUS->bootGreen, GAME_STATUS->bootRed);
 }
 
-void start_battle_countdown(void) {
+void begin_state_battle(void) {
     D_800A0900 = 5;
 }
 
-INCLUDE_ASM(code_ebd0_len_6a0, step_battle);
+INCLUDE_ASM(s32, "code_ebd0_len_6a0", step_battle);
 
 void func_80033B54(void) {
     func_8003E5B0();
@@ -67,7 +66,7 @@ void func_80033B88(void) {
     D_800A0900 = 5;
 }
 
-INCLUDE_ASM(code_ebd0_len_6a0, func_80033BC0);
+INCLUDE_ASM(s32, "code_ebd0_len_6a0", func_80033BC0);
 
 void func_80033E64(void) {
 }

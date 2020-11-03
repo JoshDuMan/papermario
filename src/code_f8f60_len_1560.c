@@ -14,12 +14,12 @@ ApiStatus MakeLerp(ScriptInstance* script, s32 isInitialCall) {
 
 ApiStatus UpdateLerp(ScriptInstance* script, s32 isInitialCall) {
     script->varTable[0x0] = (s32) update_lerp(
-        script->varTable[0xB],
-        script->varTable[0xC],
-        script->varTable[0xD],
-        script->varTable[0xE],
-        script->varTable[0xF]
-    );
+                                script->varTable[0xB],
+                                script->varTable[0xC],
+                                script->varTable[0xD],
+                                script->varTable[0xE],
+                                script->varTable[0xF]
+                            );
 
     if (script->varTable[0xE] >= script->varTable[0xF]) {
         script->varTable[0x1] = 0; // finished
@@ -86,9 +86,9 @@ ApiStatus AwaitPlayerApproach(ScriptInstance* script, s32 isInitialCall) {
     Bytecode* ptrReadPos = script->ptrReadPos;
     PlayerStatus* playerStatus = &gPlayerStatus;
 
-    s32* targetX = &script->functionTemp[0];
-    s32* targetZ = &script->functionTemp[1];
-    s32* distanceRequired = &script->functionTemp[2];
+    s32* targetX = &script->functionTemp[0].s;
+    s32* targetZ = &script->functionTemp[1].s;
+    s32* distanceRequired = &script->functionTemp[2].s;
 
     f32 distance;
 
@@ -99,9 +99,9 @@ ApiStatus AwaitPlayerApproach(ScriptInstance* script, s32 isInitialCall) {
     }
 
     distance = dist2D(
-        playerStatus->position.x, playerStatus->position.z,
-        *targetX, *targetZ
-    );
+                   playerStatus->position.x, playerStatus->position.z,
+                   *targetX, *targetZ
+               );
 
     if (distance < *distanceRequired) {
         return ApiStatus_DONE2;
@@ -114,12 +114,12 @@ ApiStatus IsPlayerWithin(ScriptInstance* script, s32 isInitialCall) {
     Bytecode* ptrReadPos = script->ptrReadPos;
     PlayerStatus* playerStatus = &gPlayerStatus;
 
-    s32* targetX = &script->functionTemp[0];
-    s32* targetZ = &script->functionTemp[1];
-    s32* distanceRequired = &script->functionTemp[2];
+    s32* targetX = &script->functionTemp[0].s;
+    s32* targetZ = &script->functionTemp[1].s;
+    s32* distanceRequired = &script->functionTemp[2].s;
 
     f32 distance;
-    Bytecode outVar = SI_VAR_0;
+    Bytecode outVar = SI_VAR(0);
 
     if (isInitialCall) {
         *targetX = get_variable(script, *ptrReadPos++);
@@ -129,9 +129,9 @@ ApiStatus IsPlayerWithin(ScriptInstance* script, s32 isInitialCall) {
     }
 
     distance = dist2D(
-        playerStatus->position.x, playerStatus->position.z,
-        *targetX, *targetZ
-    );
+                   playerStatus->position.x, playerStatus->position.z,
+                   *targetX, *targetZ
+               );
 
     set_variable(script, outVar, 0);
     if (distance < *distanceRequired) {
@@ -145,9 +145,9 @@ ApiStatus AwaitPlayerLeave(ScriptInstance* script, s32 isInitialCall) {
     Bytecode* ptrReadPos = script->ptrReadPos;
     PlayerStatus* playerStatus = &gPlayerStatus;
 
-    s32* targetX = &script->functionTemp[0];
-    s32* targetZ = &script->functionTemp[1];
-    s32* distanceRequired = &script->functionTemp[2];
+    s32* targetX = &script->functionTemp[0].s;
+    s32* targetZ = &script->functionTemp[1].s;
+    s32* distanceRequired = &script->functionTemp[2].s;
 
     f32 distance;
 
@@ -158,9 +158,9 @@ ApiStatus AwaitPlayerLeave(ScriptInstance* script, s32 isInitialCall) {
     }
 
     distance = dist2D(
-        playerStatus->position.x, playerStatus->position.z,
-        *targetX, *targetZ
-    );
+                   playerStatus->position.x, playerStatus->position.z,
+                   *targetX, *targetZ
+               );
 
     if (distance > *distanceRequired) {
         return ApiStatus_DONE2;
@@ -188,11 +188,9 @@ ApiStatus AddVectorPolar(ScriptInstance* script, s32 isInitialCall) {
     return ApiStatus_DONE2;
 }
 
-INCLUDE_API_ASM(code_f8f60_len_1560, func_802D4BDC);
-/*
 ApiStatus func_802D4BDC(ScriptInstance* script, s32 initialCall) {
-    s32* t0 = &script->functionTemp[0];
-    s32* t1 = &script->functionTemp[1];
+    s32* t0 = &script->functionTemp[0].s;
+    s32* t1 = &script->functionTemp[1].s;
     s32 t1v;
 
     if (initialCall) {
@@ -202,39 +200,61 @@ ApiStatus func_802D4BDC(ScriptInstance* script, s32 initialCall) {
 
     if (*t0 == 0) {
         t1v = *t1;
-        if (t1v != 0xFF) {
-            t1v += 0xA;
-            *t1 = t1v;
-            if (t1v < 0x100) {
-                // Void, debug stuff was probably here
-            }
-            t1v = 0xFF;
-            func_80137DA4(0xA, (f32) *t1);
-        } else {
+        if (t1v == 255) {
             return ApiStatus_DONE2;
         }
+
+        t1v += 10;
+        *t1 = t1v;
+        if (t1v > 255) {
+            *t1 = 255;
+        }
+
+        func_80137DA4(10, *t1);
     }
 
-    return 0;
+    return ApiStatus_BLOCK;
 }
-*/
 
-// Very similar to func_802D4BDC
-INCLUDE_API_ASM(code_f8f60_len_1560, func_802D4C4C);
+ApiStatus func_802D4C4C(ScriptInstance* script, s32 initialCall) {
+    s32* t0 = &script->functionTemp[0].s;
+    s32* t1 = &script->functionTemp[1].s;
+    s32 t1v;
+
+    if (initialCall) {
+        *t0 = 0;
+        *t1 = 255;
+    }
+
+    if (*t0 == 0) {
+        t1v = *t1;
+        if (t1v == 0) {
+            func_80137DA4(255, -1.0f);
+            return ApiStatus_DONE2;
+        }
+        t1v -= 10;
+        *t1 = t1v;
+        if (t1v < 0) {
+            *t1 = 0;
+        }
+        func_80137DA4(10, *t1);
+    }
+
+    return ApiStatus_BLOCK;
+}
 
 ApiStatus func_802D4CC4(ScriptInstance* script, s32 initialCall) {
     s32 value = get_variable(script, *script->ptrReadPos);
     if (value < 0) {
-        func_80137DA4(0xFF, -1.0f);
+        func_80137DA4(255, -1.0f);
     } else {
-        func_80137DA4(0xA, value);
+        func_80137DA4(10, value);
     }
 
     return ApiStatus_DONE2;
 }
 
-
-ApiStatus func_802D4D18(ScriptInstance* script, s32 initialCall) {
+ApiStatus func_802D4D14(ScriptInstance* script, s32 initialCall) {
     s32 value = get_float_variable(script, *script->ptrReadPos);
 
     func_80137E4C(0, 0, 0xC, 0x14);
@@ -249,24 +269,122 @@ ApiStatus func_802D4D88(ScriptInstance* script, s32 initialCall) {
     return ApiStatus_DONE2;
 }
 
-INCLUDE_ASM(code_f8f60_len_1560, setup_path_data);
+#ifdef NON_MATCHING
+// most likely functionally equivalent, lots of issues though.
+void setup_path_data(s32 numVecs, f32* arg1, struct Vec3f* arg2, struct Vec3f* arg3) {
+    struct Vec3f* temp_s4;
+    f32* temp_s7;
+    s32 i;
+    f32* temp;
+    f32 new_var;
+    f32 new_var2;
 
-INCLUDE_ASM(code_f8f60_len_1560, func_802D5270);
+    temp_s7 = heap_malloc(numVecs * sizeof(f32));
+    temp_s4 = heap_malloc(numVecs * sizeof(Vec3f));
+    arg1[0] = 0.0f;
 
-INCLUDE_API_ASM(code_f8f60_len_1560, LoadPath);
+    for (i = 1; i < numVecs; i++) {
+        f32 temp_x = SQ(arg2[i].x - arg2[i - 1].x);
+        f32 temp_y = SQ(arg2[i].y - arg2[i - 1].y);
+        f32 temp_z = SQ(arg2[i].z - arg2[i - 1].z);
+        arg1[i] = arg1[i - 1] + sqrtf(temp_x + temp_y + temp_z);
+    }
 
-INCLUDE_API_ASM(code_f8f60_len_1560, GetNextPathPos);
+    for (i = 1; i < numVecs; i++) {
+        arg1[i] = arg1[i] / arg1[numVecs - 1];
+    }
+
+    arg3[0].x = 0;
+
+    arg3[numVecs - 1].z = 0;
+    arg3[0].z = 0;
+
+    arg3[numVecs - 1].x = 0;
+
+    arg3[0].y = 0;
+    arg3[numVecs - 1].y = 0;
+
+    for (i = 0; i < (numVecs - 1); i++) {
+        f32 temp = temp_s7[i];
+        temp_s7[i] = arg1[i + 1] - arg1[i];
+        temp_s4[i + 1].x = ((arg2[i + 1].x - arg2[i].x) / temp_s7[i]);
+        temp_s4[i + 1].y = ((arg2[i + 1].y - arg2[i].y) / temp);
+        temp_s4[i + 1].z = ((arg2[i + 1].z - arg2[i].z) / temp);
+    }
+
+    arg3[1].x = temp_s4[2].x - temp_s4[1].x;
+    arg3[1].y = temp_s4[2].y - temp_s4[1].y;
+    arg3[1].z = temp_s4[2].z - temp_s4[1].z;
+    temp_s4[1].x = ((arg1[2] - arg1[0]) * 2);
+    temp_s4[1].y = ((arg1[2] - arg1[0]) * 2);
+    temp_s4[1].z = ((arg1[2] - arg1[0]) * 2);
+
+    for (i = 1; i < numVecs - 2; i++) {
+        f32 temp_x = temp_s7[i] / temp_s4[i].x;
+        f32 temp_y = temp_s7[i] / temp_s4[i].y;
+        f32 temp_z = temp_s7[i] / temp_s4[i].z;
+        new_var = arg3[i].x;
+        arg3[i + 1].x = (temp_s4[i + 2].x - temp_s4[i].x) - (new_var * temp_x);
+        arg3[i + 1].y = (temp_s4[i + 2].y - temp_s4[i].y) - (new_var * temp_y);
+        arg3[i + 1].z = (temp_s4[i + 2].z - temp_s4[i].z) - (new_var * temp_z);
+        temp_s4[i].x = ((arg1[i + 2] - arg1[i]) * 2) - (temp_s7[i] * temp_x);
+        temp_s4[i].y = ((arg1[i + 2] - arg1[i]) * 2) - (temp_s7[i] * temp_y);
+        temp_s4[i].z = ((arg1[i + 2] - arg1[i]) * 2) - (temp_s7[i] * temp_z);
+    }
+
+    arg3[numVecs - 2].x = arg3[numVecs - 2].x - (temp_s7[numVecs - 2] * arg3[numVecs - 1].x);
+    arg3[numVecs - 2].y = arg3[numVecs - 2].y - (temp_s7[numVecs - 2] * arg3[numVecs - 1].y);
+    arg3[numVecs - 2].z = arg3[numVecs - 2].z - (temp_s7[numVecs - 2] * arg3[numVecs - 1].z);
+
+    for (i = (numVecs - 2); i > 0 ; i--) {
+        arg3[i].x = (arg3[i].x - (temp_s7[i] * arg3[i + 1].x)) / temp_s4[i].x;
+        arg3[i].y = (arg3[i].y - (temp_s7[i] * arg3[i + 1].y)) / temp_s4[i].y;
+        arg3[i].z = (arg3[i].z - (temp_s7[i] * arg3[i + 1].z)) / temp_s4[i].z;
+    }
+
+    heap_free(temp_s7);
+    heap_free(temp_s4);
+}
+#else
+INCLUDE_ASM(s32, "code_f8f60_len_1560", setup_path_data);
+#endif
+
+INCLUDE_ASM(s32, "code_f8f60_len_1560", func_802D5270);
+
+s32 LoadPath(ScriptInstance* script, s32 isInitialCall) {
+    Bytecode* args = script->ptrReadPos;
+    s32 time = get_variable(script, *args++);
+    s32 vectorList = get_variable(script, *args++);
+    s32 numVectors = get_variable(script, *args++);
+    s32 easingType = get_variable(script, *args++);
+    Path* path = heap_malloc(sizeof(Path));
+
+    script->varTable[15] = path;
+    path->numVectors = numVectors;
+    path->unk_04 = heap_malloc(numVectors * sizeof(f32));
+    path->staticVectorList = vectorList;
+    path->vectors = heap_malloc(numVectors * sizeof(Vec3f));
+    setup_path_data(path->numVectors, path->unk_04, path->staticVectorList, path->vectors);
+
+    path->timeElapsed = 0;
+    path->timeLeft = time - 1;
+    path->easingType = easingType;
+
+    return ApiStatus_DONE2;
+}
+
+INCLUDE_ASM(s32, "code_f8f60_len_1560", GetNextPathPos, ScriptInstance* script, s32 isInitialCall);
 
 ApiStatus GetDist2D(ScriptInstance* script, s32 isInitialCall) {
     Bytecode* ptrReadPos = script->ptrReadPos;
 
     Bytecode outVar = *ptrReadPos++;
     set_float_variable(script, outVar, dist2D(
-        get_float_variable(script, *ptrReadPos++),
-        get_float_variable(script, *ptrReadPos++),
-        get_float_variable(script, *ptrReadPos++),
-        get_float_variable(script, *ptrReadPos++)
-    ));
+                           get_float_variable(script, *ptrReadPos++),
+                           get_float_variable(script, *ptrReadPos++),
+                           get_float_variable(script, *ptrReadPos++),
+                           get_float_variable(script, *ptrReadPos++)
+                       ));
 
     return ApiStatus_DONE2;
 }
@@ -325,20 +443,20 @@ ApiStatus EnableStatusMenu(ScriptInstance* script, s32 isInitialCall) {
 
 ApiStatus ShowStatusMenu(ScriptInstance* script, s32 isInitialCall) {
     if (get_variable(script, *script->ptrReadPos) != 0) {
-        status_menu_enable_ignore_changes();
+        func_800E9894();
         func_800E97B8();
     } else {
-        status_menu_disable_ignore_changes();
+        func_800E98C4();
     }
 
     return ApiStatus_DONE2;
 }
 
 ApiStatus SetGameMode(ScriptInstance* script, s32 isInitialCall) {
-    set_game_mode(
-        // Clear upper half
-        (get_variable(script, *script->ptrReadPos) << 0x10) >> 0x10
-    );
+    s16 mode = get_variable(script, *script->ptrReadPos);
+
+    set_game_mode(mode);
+
     return ApiStatus_DONE2;
 }
 

@@ -11,19 +11,19 @@ typedef UNK_TYPE EncounterTriggerFlags;
 #define EncounterTriggerFlags_HAMMER  0x00000004
 #define EncounterTriggerFlags_PARTNER 0x00000006
 
-typedef UNK_TYPE PartnerId;
-#define PartnerId_NONE       0x00000000
-#define PartnerId_GOOMBARIO  0x00000001
-#define PartnerId_KOOPER     0x00000002
-#define PartnerId_BOMBETTE   0x00000003
-#define PartnerId_PARAKARRY  0x00000004
-#define PartnerId_GOOMPA     0x00000005
-#define PartnerId_WATT       0x00000006
-#define PartnerId_SUSHIE     0x00000007
-#define PartnerId_LAKILESTER 0x00000008
-#define PartnerId_BOW        0x00000009
-#define PartnerId_GOOMBARIA  0x0000000A
-#define PartnerId_TWINK      0x0000000B
+typedef s8 PartnerId;
+#define PartnerId_NONE       0x00
+#define PartnerId_GOOMBARIO  0x01
+#define PartnerId_KOOPER     0x02
+#define PartnerId_BOMBETTE   0x03
+#define PartnerId_PARAKARRY  0x04
+#define PartnerId_GOOMPA     0x05
+#define PartnerId_WATT       0x06
+#define PartnerId_SUSHIE     0x07
+#define PartnerId_LAKILESTER 0x08
+#define PartnerId_BOW        0x09
+#define PartnerId_GOOMBARIA  0x0A
+#define PartnerId_TWINK      0x0B
 
 typedef UNK_TYPE SpriteId;
 #define SpriteId_WORLD_GOOMBARIO       0x00000001
@@ -260,7 +260,7 @@ typedef UNK_TYPE SpriteId;
 #define SpriteId_PARADE_TWINK          0x000000E8
 #define SpriteId_LEAF                  0x000000E9
 
-typedef UNK_TYPE Song;
+typedef s32 SongID;
 #define Song_TOAD_TOWN              0x00000000
 #define Song_NORMAL_BATTLE          0x00000002
 #define Song_SPECIAL_BATTLE         0x00000003
@@ -554,7 +554,10 @@ typedef UNK_TYPE Cam;
 #define Cam_TATTLE  0x00000002
 #define Cam_CAM3    0x00000003
 
-typedef UNK_TYPE ItemId;
+
+#define LOOKUP_ITEM(itemID) gItemTable[itemID & ~0xF0000]
+
+typedef s16 ItemId;
 #define ItemId_JUMP               0x00000001
 #define ItemId_SPIN_JUMP          0x00000002
 #define ItemId_TORNADO_JUMP       0x00000003
@@ -995,7 +998,7 @@ typedef UNK_TYPE HitResult;
 #define HitResult_MISS              0x00000006
 #define HitResult_HIT_STATIC        0x00000007
 #define HitResult_IMMUNE            0x00000008
-#define HitResult_TriggerFlagsED_EXPLODE -1
+#define HitResult_ED_EXPLODE -1
 
 typedef UNK_TYPE Iter;
 #define Iter_FIRST 0xFFFFFFFF
@@ -1224,7 +1227,7 @@ typedef UNK_TYPE DoorSounds;
 #define DoorSounds_CREAKY 0x00000003
 #define DoorSounds_GATE   0x00000004
 
-typedef UNK_TYPE ActionState;
+typedef s8 ActionState;
 #define ActionState_IDLE               0x00000000
 #define ActionState_WALK               0x00000001
 #define ActionState_RUN                0x00000002
@@ -1236,7 +1239,7 @@ typedef UNK_TYPE ActionState;
 #define ActionState_STEP_DOWN          0x00000009
 #define ActionState_LAND               0x0000000A
 #define ActionState_STEP_DOWN_LAND     0x0000000B
-#define ActionState_CONVERSATION       0x0000000C
+#define ActionState_CONVERSATION       0x0000000C // This and following states prohibit normal movement.
 #define ActionState_SPIN_JUMP          0x0000000D
 #define ActionState_GROUND_POUND       0x0000000E
 #define ActionState_ULTRA_JUMP         0x0000000F
@@ -1258,35 +1261,35 @@ typedef s32 NpcId;
 #define NpcId_PLAYER  0xFFFFFFFE
 #define NpcId_PARTNER 0xFFFFFFFC
 
-typedef UNK_TYPE TriggerFlags;
-#define TriggerFlags_FLOOR_TOUCH   0x00000080
-#define TriggerFlags_FLOOR_ABOVE   0x00080000
-#define TriggerFlags_FLOOR_PRESS_A 0x00000800
-#define TriggerFlags_FLOOR_JUMP    0x00000200
-#define TriggerFlags_WALL_TOUCH    0x00000400
-#define TriggerFlags_WALL_PUSH     0x00000040
-#define TriggerFlags_WALL_PRESS_A  0x00000100
-#define TriggerFlags_WALL_HAMMER   0x00001000
-#define TriggerFlags_CEILING_TOUCH 0x00040000
-#define TriggerFlags_POINT_BOMB    0x00100000
-#define TriggerFlags_GAME_FLAG_SET 0x00010000
-#define TriggerFlags_AREA_FLAG_SET 0x00020000
+typedef UNK_TYPE TriggerFlag;
+#define TriggerFlag_FLOOR_TOUCH    0x00000080
+#define TriggerFlag_FLOOR_ABOVE    0x00080000
+#define TriggerFlag_FLOOR_INTERACT 0x00000800
+#define TriggerFlag_FLOOR_JUMP     0x00000200
+#define TriggerFlag_WALL_TOUCH     0x00000400
+#define TriggerFlag_WALL_PUSH      0x00000040
+#define TriggerFlag_WALL_INTERACT  0x00000100
+#define TriggerFlag_WALL_HAMMER    0x00001000
+#define TriggerFlag_CEILING_TOUCH  0x00040000
+#define TriggerFlag_BOMB           0x00100000
+#define TriggerFlag_SAVE_FLAG_SET  0x00010000
+#define TriggerFlag_AREA_FLAG_SET  0x00020000
 
-typedef UNK_TYPE Buttons;
-#define Buttons_A       0x00008000
-#define Buttons_B       0x00004000
-#define Buttons_Z       0x00002000
-#define Buttons_START   0x00001000
-#define Buttons_D_UP    0x00000800
-#define Buttons_D_DOWN  0x00000400
-#define Buttons_D_LEFT  0x00000200
-#define Buttons_D_RIGHT 0x00000100
-#define Buttons_L       0x00000020
-#define Buttons_R       0x00000010
-#define Buttons_C_UP    0x00000008
-#define Buttons_C_DOWN  0x00000004
-#define Buttons_C_LEFT  0x00000002
-#define Buttons_C_RIGHT 0x00000001
+typedef UNK_TYPE Button;
+#define Button_A       0x00008000
+#define Button_B       0x00004000
+#define Button_Z       0x00002000
+#define Button_START   0x00001000
+#define Button_D_UP    0x00000800
+#define Button_D_DOWN  0x00000400
+#define Button_D_LEFT  0x00000200
+#define Button_D_RIGHT 0x00000100
+#define Button_L       0x00000020
+#define Button_R       0x00000010
+#define Button_C_UP    0x00000008
+#define Button_C_DOWN  0x00000004
+#define Button_C_LEFT  0x00000002
+#define Button_C_RIGHT 0x00000001
 
 typedef UNK_TYPE PlayerBuff;
 #define PlayerBuff_ALL             0x0FFFFFFF

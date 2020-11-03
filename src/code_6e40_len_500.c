@@ -1,17 +1,36 @@
-#include "common.h"
+#include "code_6e40_len_500.h"
 
-INCLUDE_ASM(code_6e40_len_500, func_8002BA40);
+void initialize_curtains(void) {
+    gCurtainDrawCallback = NULL;
+    gCurtainScale = 2.0f;
+    gCurtainScaleGoal = 2.0f;
+    gCurtainFade = 0.0f;
+    gCurtainFadeGoal = 0.0f;
+}
 
-INCLUDE_ASM(code_6e40_len_500, func_8002BA78);
+void update_curtains(void) {
+}
 
-INCLUDE_ASM(code_6e40_len_500, func_8002BA80);
+INCLUDE_ASM(s32, "code_6e40_len_500", render_curtains);
 
-INCLUDE_ASM(code_6e40_len_500, func_8002BEDC);
+void set_curtain_scale_goal(f32 scale) {
+    gCurtainScaleGoal = scale;
+}
 
-INCLUDE_ASM(code_6e40_len_500, func_8002BEEC);
+void set_curtain_scale(f32 scale) {
+    gCurtainScaleGoal = scale;
+    gCurtainScale = scale;
+}
 
-INCLUDE_ASM(code_6e40_len_500, func_8002BF04);
+void set_curtain_draw_callback(UNK_FUN_PTR(callback)) {
+    gCurtainDrawCallback = callback;
+}
 
-INCLUDE_ASM(code_6e40_len_500, func_8002BF14);
+void set_curtain_fade_goal(f32 fade) {
+    gCurtainFadeGoal = fade;
+}
 
-INCLUDE_ASM(code_6e40_len_500, func_8002BF24);
+void set_curtain_fade(f32 fade) {
+    gCurtainFadeGoal = fade;
+    gCurtainFade = fade;
+}

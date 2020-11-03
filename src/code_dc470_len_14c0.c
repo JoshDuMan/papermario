@@ -1,5 +1,9 @@
 #include "common.h"
 
+char gCloudyFlowerFieldsBg[] = "fla_bg";
+char gSunnyFlowerFieldsBg[] = "flb_bg";
+s8 D_8014F12F = 0;
+
 void load_map_bg(char* optAssetName) {
     UNK_PTR compressedData;
     u32 assetSize;
@@ -11,7 +15,6 @@ void load_map_bg(char* optAssetName) {
     // StoryProgress check
     if (get_variable(0, 0xF5DE0180) >= 0x35) {
         // Use sunny Flower Fields bg rather than cloudy
-        // TODO: these globals should be string literals
         if (!strcmp(assetName, gCloudyFlowerFieldsBg)) {
             assetName = gSunnyFlowerFieldsBg;
         }
@@ -23,7 +26,7 @@ void load_map_bg(char* optAssetName) {
 }
 
 void func_80145DF8(void) {
-    GameStatus* gameStatus = *gGameStatusPtr;
+    GameStatus* gameStatus = GAME_STATUS;
     D_801595A0 = 0;
     D_8014F12F = 0;
 
@@ -31,8 +34,8 @@ void func_80145DF8(void) {
     gameStatus->enableBackground &= 0xF0;
 }
 
-void read_background_size(BackgroundHeader *bg) {
-    GameStatus* gameStatus = *gGameStatusPtr;
+void read_background_size(BackgroundHeader* bg) {
+    GameStatus* gameStatus = GAME_STATUS;
 
     gameStatus->backgroundMaxW = bg->width;
     gameStatus->backgroundMaxH = bg->height;
@@ -44,7 +47,7 @@ void read_background_size(BackgroundHeader *bg) {
 }
 
 void set_background_size(s16 startX, s16 startY, s16 sizeX, s16 sizeY) {
-    GameStatus* gameStatus = *gGameStatusPtr;
+    GameStatus* gameStatus = GAME_STATUS;
 
     gameStatus->enableBackground &= ~1;
     gameStatus->backgroundMaxW = startX;
@@ -56,7 +59,7 @@ void set_background_size(s16 startX, s16 startY, s16 sizeX, s16 sizeY) {
 u16 func_80145E98(s32 arg0, s32 arg1, s32 arg2) {
     s32 temp_lo;
 
-    temp_lo = (arg1 - (u16)(arg0)) * arg2;
+    temp_lo = (arg1 - (u16)arg0) * arg2;
     if (temp_lo < 0) {
         temp_lo = temp_lo + 0xFF;
     }
@@ -64,4 +67,12 @@ u16 func_80145E98(s32 arg0, s32 arg1, s32 arg2) {
     return temp_lo;
 }
 
-INCLUDE_ASM(code_dc470_len_14c0, func_80145EC0);
+INCLUDE_ASM(s32, "code_dc470_len_14c0", func_80145EC0);
+
+void func_8014720C(void) {
+    D_8014F12F = 1;
+}
+
+void func_8014721C(void) {
+    D_8014F12F = 0;
+}
